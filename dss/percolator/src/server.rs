@@ -7,6 +7,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use labrpc::RpcFuture;
+use futures::future;
 
 // TTL is used for a lock key.
 // If the key's lifetime exceeds this value, it should be cleaned up.
@@ -15,14 +16,16 @@ const TTL: u64 = Duration::from_millis(100).as_nanos() as u64;
 
 #[derive(Clone, Default)]
 pub struct TimestampOracle {
-    // You definitions here if needed.
+    pub timestamp: i64
 }
 
 impl timestamp::Service for TimestampOracle {
-    // example get_timestamp RPC handler.
     fn get_timestamp(&self, _: TimestampRequest) -> RpcFuture<TimestampResponse> {
-        // Your code here.
-        unimplemented!()
+        // add locking
+        self.timestamp.checked_add(1);
+        return Box::new(future::result(Ok(TimestampResponse {
+            timestamp: self.timestamp
+        })))
     }
 }
 
