@@ -1,6 +1,9 @@
 use crate::service::{TSOClient, TransactionClient};
+use futures::future;
 
 use labrpc::*;
+
+use crate::msg::*;
 
 // BACKOFF_TIME_MS is the wait time before retrying to send the request.
 // It should be exponential growth. e.g.
@@ -17,21 +20,25 @@ const RETRY_TIMES: usize = 3;
 /// One is getting a monotonically increasing timestamp from TSO (Timestamp Oracle).
 /// The other is do the transaction logic.
 #[derive(Clone)]
-pub struct Client {
-    // Your definitions here.
+pub struct Client { 
+    tsoClient: TSOClient,
+    txClient: TransactionClient
 }
 
 impl Client {
-    /// Creates a new Client.
     pub fn new(tso_client: TSOClient, txn_client: TransactionClient) -> Client {
-        // Your code here.
-        Client {}
+        Client {
+            tsoClient: tso_client,
+            txClient: txn_client
+        }
     }
 
-    /// Gets a timestamp from a TSO.
     pub fn get_timestamp(&self) -> Result<u64> {
-        // Your code here.
-        unimplemented!()
+        let ts_request = TimestampRequest {};
+
+        let reply = self.tsoClient.get_timestamp(&ts_request).wait().unwrap();
+
+        return Ok(reply.timestamp);
     }
 
     /// Begins a new transaction.

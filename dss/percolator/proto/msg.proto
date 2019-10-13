@@ -14,7 +14,7 @@ package msg;
 message TimestampRequest {}
 
 message TimestampResponse {
-    int64 timestamp = 1;
+    uint64 timestamp = 1;
 }
 
 message GetRequest {}

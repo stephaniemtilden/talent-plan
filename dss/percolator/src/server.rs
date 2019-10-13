@@ -16,8 +16,15 @@ const TTL: u64 = Duration::from_millis(100).as_nanos() as u64;
 
 #[derive(Clone, Default)]
 pub struct TimestampOracle {
-    pub timestamp: i64
+    pub timestamp: u64
 }
+
+service! {
+    service timestamp_oracle {
+        rpc get_timestamp(TimestampRequest) returns (TimestampResponse);
+    }
+}
+use timestamp_oracle::{add_service, Client, Service};
 
 impl timestamp::Service for TimestampOracle {
     fn get_timestamp(&self, _: TimestampRequest) -> RpcFuture<TimestampResponse> {
